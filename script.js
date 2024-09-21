@@ -78,7 +78,6 @@ const CourseInfo = {
   
   function getLearnerData(course, ag, submissions) {
     // here, we would process this data to achieve the desired result.
-
     const result = [
         //   {
         //     id: 125,
@@ -95,11 +94,11 @@ const CourseInfo = {
         ];
 
     // Iterate through Submissions.
-    // log learner_id into learner_ids set
     // If learner_id is not in set
+        // log learner_id into learner_ids set
         // Create new object in results array with learner_id
-    // else //If learner_id is in set)
-        // find object with learner_id, add information
+        
+    // Calculate avg for submission.assignment.id where submission.submission.submitted_at is < ag.assignment.due_at
     
     learner_ids = new Set()
 
@@ -109,13 +108,8 @@ const CourseInfo = {
             result.push({id: submission.learner_id});
         }
     });
-
-
-
     console.log(learner_ids);
 
-
-  
     return result;
   }
   
