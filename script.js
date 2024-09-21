@@ -97,17 +97,43 @@ const CourseInfo = {
     // If learner_id is not in set
         // log learner_id into learner_ids set
         // Create new object in results array with learner_id
-        
+    
+    // If submitted at <
+    
     // Calculate avg for submission.assignment.id where submission.submission.submitted_at is < ag.assignment.due_at
+
+    function validSubmission(submission) {
+        if(submission.submission.submitted_at < new Date().toISOString().split('T')[0]) {
+            console.log("Yayy")
+        } else {
+            console.log("Nay");
+        }
+    }
     
     learner_ids = new Set()
 
     submissions.forEach(submission => {
         if (!learner_ids.has(submission.learner_id)){
             learner_ids.add(submission.learner_id)
+
+            validSubmission(submission)
+
             result.push({id: submission.learner_id});
+            console.log(result.findIndex(student => student.id === 125));
+        } else {
+            validSubmission(submission)
         }
     });
+
+
+
+    console.log();
+
+    // Object.keys(result).find(key => obj[key] === 'John')
+    
+
+    
+
     console.log(learner_ids);
 
     return result;
