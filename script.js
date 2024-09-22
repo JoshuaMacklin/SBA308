@@ -101,74 +101,94 @@ const CourseInfo = {
         //   {
         //     id: 132,
         //          the ID of the learner for which this data has been collected
-        //     avg: 0.82, // (39 + 125) / (50 + 150)
+        //     avg: 0.825, // (39 + 124) / (50 + 150)
         //          the learner’s total, weighted average, in which assignments with more points_possible should be counted for more e.g. a learner 
         //          with 50/100 on one assignment and 190/200 on another would have a weighted average score of 240/300 = 80%
         //     1: 0.78, // 39 / 50
         //          if an assignment is not yet due, it should not be included in either the average or the keyed dictionary of scores
-        //     2: 0.833 // late: (140 - 15) / 150
+        //     2: 0.84 // late: (140 - 14) / 150
         //   }
         ];
     
-    learner_ids = new Set()
+    let learner_ids = new Set()
 
+    let todaysDate = new Date().toISOString().split('T')[0]
+
+    // let total = 0
     
-
-    submission: submissions.forEach(submission => {
-        learnerId = submission.learner_id
-        totalScore = 0
-        totalPossibleScore = 0
-        // learner_ids.findIndex(student => student.id === learnerId)
-        
-        if (!learner_ids.has(learnerId)){
-            learner_ids.add(learnerId)
-
-            validSubmission(submission)
-
-            result.push({id: learnerId, avg: 0, total: totalScore });
-            console.log(result.findIndex(student => student.id === learnerId));
-        } else {
-            validSubmission(submission)
-            result.push({id: learnerId, avg: 0, total: score });
-            console.log(result.findIndex(student => student.id === learnerId));
-        }
-
-        studentId = result.findIndex(student => student.id === learnerId);
-    });
-
-    function validSubmission(submission) {
-        // ag.assignments.findIndex(student => student.id === 125)
-        // if(assignmentDueAt < todaysDate) { // Not due yet
-        todaysDate = new Date().toISOString().split('T')[0]
-        assignmentIndex = ag.assignments.findIndex(assignment => assignment.id === submission.assignment_id)
-        submittedAt = submission.submission.submitted_at
-        assignmentDueAt = ag.assignments[assignmentIndex].due_at
+    for (let submission of submissions) {
+        // debugger
+        let learnerId = submission.learner_id
+        let assignmentIndex = ag.assignments.findIndex(assignment => assignment.id === submission.assignment_id)
 
         score = submission.submission.score
         possibleScore = ag.assignments[assignmentIndex].points_possible
+        
+        submittedAt = submission.submission.submitted_at
+        assignmentDueAt = ag.assignments[assignmentIndex].due_at
 
+        // totalScore = 0
+        // totalPossibleScore = 0
+        // learner_ids.findIndex(student => student.id === learnerId)
+        // ag.assignments.findIndex(student => student.id === 125)
+        // if(assignmentDueAt < todaysDate) { // Not due yet
+        
+        if (!learner_ids.has(learnerId)){
+            learner_ids.add(learnerId)
+            // let score = validSubmission()
+            result.push({id: learnerId, avg: 0, total: validSubmission(), possible_score: possibleScoreSubmission()});
+            console.log(result.findIndex(student => student.id === learnerId));
+            // console.log(result.findIndex(student => student.id === learnerId));
+        } else {
+            // let score = validSubmission()
+            learnerIdIndex = result.findIndex(student => student.id === learnerId)
+            if (typeof(score) == 'number') {
+                result[learnerIdIndex].total += validSubmission(submission)
+            }
+            // result[learnerIdIndex][1] = (validSubmission() / possibleScoreSubmission());
+            result[learnerIdIndex].possible_score += possibleScoreSubmission()
+            // result.push({id: learnerId, avg: 0});
+        }
+
+        learnerIdIndex = result.findIndex(student => student.id === learnerId)
+        result[learnerIdIndex].avg = (result[learnerIdIndex].total / result[learnerIdIndex].possible_score)
+        studentId = result.findIndex(student => student.id === learnerId);
+        delete result.total;
+        delete result.possible_score;
+    };
+
+    function validSubmission() {
         if ( assignmentDueAt <= todaysDate) {
             if( submittedAt <= assignmentDueAt ) {
-                console.log(`Valid Submission | submited: ${submittedAt}, due: ${assignmentDueAt}`)
-                totalScore += score
-                totalPossibleScore += possibleScore
+                return score
             } else {
-                console.log(`Late Submission | submited: ${submittedAt}, due: ${assignmentDueAt}`);
-                totalScore += (score * 0.9)
-                totalPossibleScore += possibleScore
+                return (score * 0.9)
             }
         } else {
-            console.log("Not Due Yet: Skip");
-            // continue submission;
+            return 0;  
         }
-        console.log(`total: ${totalScore}, totalPossible: ${totalPossibleScore}`);
+    }
 
+    function possibleScoreSubmission() {
+        if ( assignmentDueAt <= todaysDate) {
+            return possibleScore
+        } 
+        else {
+            return 0;  
+        }
     }
 
     // Object.keys(result).find(key => obj[key] === 'John')
 
-    console.log(learner_ids);
+    // console.log(learner_ids);
+    
+    
     return result;
+    
   }
+
+
+  
+    
   const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
   console.log(result);
