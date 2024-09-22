@@ -114,7 +114,7 @@ const CourseInfo = {
     
     let learner_ids = new Set()
 
-    let todaysDate = new Date().toISOString().split('T')[0]
+    const todaysDate = new Date().toISOString().split('T')[0]
 
     // let total = 0
     
@@ -162,15 +162,19 @@ const CourseInfo = {
     };
 
     function validSubmission(learnerIdIndex) {
-        if ( assignmentDueAt <= todaysDate) {
-            if( submittedAt <= assignmentDueAt ) {
-                return score
+       try {
+            if ( assignmentDueAt <= todaysDate) {
+                if( submittedAt <= assignmentDueAt ) {
+                    return score
+                } else {
+                    return (score * 0.9)
+                }
             } else {
-                return (score * 0.9)
+                return 0;
             }
-        } else {
-            return 0;
-        }
+       } catch (error) {
+        console.log(error);
+       }
     }
 
     function possibleScoreSubmission() {
