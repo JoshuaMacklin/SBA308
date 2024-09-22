@@ -77,7 +77,22 @@ const CourseInfo = {
   ];
   
   function getLearnerData(course, ag, submissions) {
+    
+    
     // here, we would process this data to achieve the desired result.
+
+    // Iterate through Submissions.
+    // If learner_id is not in set
+        // log learner_id into learner_ids set
+        // Create new object in results array with learner_id
+    
+    // If submission.submitted_at < due date, (validSubmission)
+    // take submission score and ag assignmentpoints possible into variable
+    // add those to total score & total possible score to get average at end.
+
+
+    
+    // Calculate avg for submission.assignment.id where submission.submission.submitted_at is < ag.assignment.due_at
     const result = [
         //   {
         //     id: 125,
@@ -93,20 +108,17 @@ const CourseInfo = {
         //   }
         ];
 
-    // Iterate through Submissions.
-    // If learner_id is not in set
-        // log learner_id into learner_ids set
-        // Create new object in results array with learner_id
-    
-    // If submitted at <
-    
-    // Calculate avg for submission.assignment.id where submission.submission.submitted_at is < ag.assignment.due_at
-
     function validSubmission(submission) {
-        if(submission.submission.submitted_at < new Date().toISOString().split('T')[0]) {
-            console.log("Yayy")
+        // ag.assignments.findIndex(student => student.id === 125)
+        // if(submissions.submission.submitted_at < new Date().toISOString().split('T')[0]) {
+        assignmentIndex = ag.assignments.findIndex(assignment => assignment.id === submission.assignment_id)
+        submittedAt = submission.submission.submitted_at
+        assignmentDueAt = ag.assignments[assignmentIndex].due_at
+
+        if( submittedAt <= assignmentDueAt ) {
+            console.log(`Valid Submission | submited: ${submittedAt}, due: ${assignmentDueAt}`)
         } else {
-            console.log("Nay");
+            console.log(`Late Submission | submited: ${submittedAt}, due: ${assignmentDueAt}`);
         }
     }
     
@@ -118,27 +130,18 @@ const CourseInfo = {
 
             validSubmission(submission)
 
-            result.push({id: submission.learner_id});
+            result.push({id: submission.learner_id, avg: 0});
             console.log(result.findIndex(student => student.id === 125));
         } else {
             validSubmission(submission)
         }
     });
-
-
-
     console.log();
 
     // Object.keys(result).find(key => obj[key] === 'John')
-    
-
-    
 
     console.log(learner_ids);
-
     return result;
   }
-  
   const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
-  
   console.log(result);
