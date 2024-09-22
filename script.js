@@ -139,27 +139,29 @@ const CourseInfo = {
             learner_ids.add(learnerId)
             // let score = validSubmission()
             result.push({id: learnerId, avg: 0, total: validSubmission(), possible_score: possibleScoreSubmission()});
-            console.log(result.findIndex(student => student.id === learnerId));
+            learnerIdIndex = result.findIndex(student => student.id === learnerId)
+            result[learnerIdIndex]['1'] = score / possibleScore
+            // result[learnerIdIndex]['hi'] = "Hi"
             // console.log(result.findIndex(student => student.id === learnerId));
         } else {
             // let score = validSubmission()
             learnerIdIndex = result.findIndex(student => student.id === learnerId)
             if (typeof(score) == 'number') {
-                result[learnerIdIndex].total += validSubmission(submission)
+                result[learnerIdIndex].total += validSubmission(submission, learnerIdIndex)
             }
             // result[learnerIdIndex][1] = (validSubmission() / possibleScoreSubmission());
+            result[learnerIdIndex]['2'] = score / possibleScore
             result[learnerIdIndex].possible_score += possibleScoreSubmission()
             // result.push({id: learnerId, avg: 0});
         }
-
         learnerIdIndex = result.findIndex(student => student.id === learnerId)
         result[learnerIdIndex].avg = (result[learnerIdIndex].total / result[learnerIdIndex].possible_score)
         studentId = result.findIndex(student => student.id === learnerId);
-        delete result.total;
-        delete result.possible_score;
+        // delete result.total;
+        // delete result.possible_score;
     };
 
-    function validSubmission() {
+    function validSubmission(learnerIdIndex) {
         if ( assignmentDueAt <= todaysDate) {
             if( submittedAt <= assignmentDueAt ) {
                 return score
@@ -188,9 +190,11 @@ const CourseInfo = {
     return result;
     
   }
-
-
-  
-    
+   
   const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
+
+  result.forEach(res => {
+    delete res.total
+    delete res.possible_score
+  });
   console.log(result);
