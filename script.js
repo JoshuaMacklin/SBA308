@@ -90,6 +90,8 @@ const CourseInfo = {
     // take submission score and ag assignmentpoints possible into variable
     // add those to total score & total possible score to get average at end.
 
+    // To Do: For each assignment, add a new line to results for every assignment with earned points and possible points
+
     // Calculate avg for submission.assignment.id where submission.submission.submitted_at is < ag.assignment.due_at
     const result = [
         //   {
@@ -165,7 +167,7 @@ const CourseInfo = {
                 return (score * 0.9)
             }
         } else {
-            return 0;  
+            return 0;
         }
     }
 
