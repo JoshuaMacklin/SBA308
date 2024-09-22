@@ -90,8 +90,6 @@ const CourseInfo = {
     // take submission score and ag assignmentpoints possible into variable
     // add those to total score & total possible score to get average at end.
 
-
-    
     // Calculate avg for submission.assignment.id where submission.submission.submitted_at is < ag.assignment.due_at
     const result = [
         //   {
@@ -102,41 +100,70 @@ const CourseInfo = {
         //   },
         //   {
         //     id: 132,
+        //          the ID of the learner for which this data has been collected
         //     avg: 0.82, // (39 + 125) / (50 + 150)
+        //          the learner’s total, weighted average, in which assignments with more points_possible should be counted for more e.g. a learner 
+        //          with 50/100 on one assignment and 190/200 on another would have a weighted average score of 240/300 = 80%
         //     1: 0.78, // 39 / 50
+        //          if an assignment is not yet due, it should not be included in either the average or the keyed dictionary of scores
         //     2: 0.833 // late: (140 - 15) / 150
         //   }
         ];
+    
+    learner_ids = new Set()
+
+    
+
+    submission: submissions.forEach(submission => {
+        learnerId = submission.learner_id
+        totalScore = 0
+        totalPossibleScore = 0
+        // learner_ids.findIndex(student => student.id === learnerId)
+        
+        if (!learner_ids.has(learnerId)){
+            learner_ids.add(learnerId)
+
+            validSubmission(submission)
+
+            result.push({id: learnerId, avg: 0, total: totalScore });
+            console.log(result.findIndex(student => student.id === learnerId));
+        } else {
+            validSubmission(submission)
+            result.push({id: learnerId, avg: 0, total: score });
+            console.log(result.findIndex(student => student.id === learnerId));
+        }
+
+        studentId = result.findIndex(student => student.id === learnerId);
+    });
 
     function validSubmission(submission) {
         // ag.assignments.findIndex(student => student.id === 125)
-        // if(submissions.submission.submitted_at < new Date().toISOString().split('T')[0]) {
+        // if(assignmentDueAt < todaysDate) { // Not due yet
+        todaysDate = new Date().toISOString().split('T')[0]
         assignmentIndex = ag.assignments.findIndex(assignment => assignment.id === submission.assignment_id)
         submittedAt = submission.submission.submitted_at
         assignmentDueAt = ag.assignments[assignmentIndex].due_at
 
-        if( submittedAt <= assignmentDueAt ) {
-            console.log(`Valid Submission | submited: ${submittedAt}, due: ${assignmentDueAt}`)
+        score = submission.submission.score
+        possibleScore = ag.assignments[assignmentIndex].points_possible
+
+        if ( assignmentDueAt <= todaysDate) {
+            if( submittedAt <= assignmentDueAt ) {
+                console.log(`Valid Submission | submited: ${submittedAt}, due: ${assignmentDueAt}`)
+                totalScore += score
+                totalPossibleScore += possibleScore
+            } else {
+                console.log(`Late Submission | submited: ${submittedAt}, due: ${assignmentDueAt}`);
+                totalScore += (score * 0.9)
+                totalPossibleScore += possibleScore
+            }
         } else {
-            console.log(`Late Submission | submited: ${submittedAt}, due: ${assignmentDueAt}`);
+            console.log("Not Due Yet: Skip");
+            // continue submission;
         }
+        console.log(`total: ${totalScore}, totalPossible: ${totalPossibleScore}`);
+
     }
-    
-    learner_ids = new Set()
-
-    submissions.forEach(submission => {
-        if (!learner_ids.has(submission.learner_id)){
-            learner_ids.add(submission.learner_id)
-
-            validSubmission(submission)
-
-            result.push({id: submission.learner_id, avg: 0});
-            console.log(result.findIndex(student => student.id === 125));
-        } else {
-            validSubmission(submission)
-        }
-    });
-    console.log();
 
     // Object.keys(result).find(key => obj[key] === 'John')
 
